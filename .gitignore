@@ -1,0 +1,31 @@
+# Ignore specific Eclipse/IDEA files and folders
+.settings/
+.project
+.classpath
+*.iml
+
+# Ignore build output folders
+target/
+logs/
+RemoteSystemsTempFiles/
+.Smarttomcat/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE workspace files
+*.iws
+.idea/
+*.log
+.metadata/
+
+# Maven specific ignore
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
