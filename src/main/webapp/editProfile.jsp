@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
+        <jsp:include page="/components/page-info.jsp" />
     <title>Trang cá nhân</title>
     <style>
         body {
@@ -133,7 +135,7 @@
         <div class="btn-group">
             <!-- Button to cancel and go back -->
             <form action="profile.jsp" method="get">
-                <input type="submit" class="btn-cancel" value="Cancel">
+                <input type="submit" class="btn-cancel" name="action" value="Cancel">
             </form>
         </div>
     </div>

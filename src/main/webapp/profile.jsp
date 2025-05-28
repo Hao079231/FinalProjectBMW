@@ -1,7 +1,8 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="Beans.Users" %>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -84,41 +85,50 @@
             background-color: #f57c00;
         }
     </style>
+    <script src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
 </head>
+
 <body>
-    <%
-        HttpSession ses = request.getSession();
-        Users user = (Users) ses.getAttribute("user");
-    %>
+    <% HttpSession ses=request.getSession(); Users user=(Users) ses.getAttribute("user"); %>
 
-    <!-- Logout button -->
-    <form action="SignInUp" method="post">
-        <input type="hidden" name="action" value="logout">
-        <button type="submit" class="logout-btn">Đăng xuất</button>
-    </form>
+        <!-- Logout button -->
+        <form action="SignInUp" method="post">
+            <input type="hidden" name="action" value="logout">
+            <button type="submit" class="logout-btn">Đăng xuất</button>
+        </form>
 
-    <div class="container">
-        <h1>Trang cá nhân</h1>
+        <div class="container">
+            <h1>Trang cá nhân</h1>
 
-        <% if (user != null) { %>
-            <p><strong>Tên:</strong> <%= user.getUsername() %></p>
-            <p><strong>Email:</strong> <%= user.getEmail() %></p>
-            <p><strong>Số điện thoại:</strong> <%= user.getPhone() %></p>
-            <p><strong>Địa chỉ:</strong> <%= user.getAddress() %></p>
-        <% } else { %>
-            <p>Bạn chưa đăng nhập</p>
-        <% } %>
+            <% if (user !=null) { %>
+                <p><strong>Tên:</strong>
+                    <%= user.getUsername() %>
+                </p>
+                <p><strong>Email:</strong>
+                    <%= user.getEmail() %>
+                </p>
+                <p><strong>Số điện thoại:</strong>
+                    <%= user.getPhone() %>
+                </p>
+                <p><strong>Địa chỉ:</strong>
+                    <%= user.getAddress() %>
+                </p>
+                <% } else { %>
+                    <p>Bạn chưa đăng nhập</p>
+                    <% } %>
 
-        <div class="btn-group">
-            <!-- Button to go to edit page -->
-            <form action="editProfile.jsp" method="get" style="display: inline-block; margin-right: 10px;">
-                <input type="submit" class="btn-edit" value="Sửa">
-            </form>
-            <!-- Button to go back to user home -->
-            <form action="ProductList" method="get" style="display: inline-block;">
-                <input type="submit" class="btn-cancel" value="Hủy">
-            </form>
+                        <div class="btn-group">
+                            <!-- Button to go to edit page -->
+                            <form action="editProfile.jsp" method="get"
+                                style="display: inline-block; margin-right: 10px;">
+                                <input type="submit" class="btn-edit" value="Sửa">
+                            </form>
+                            <!-- Button to go back to user home -->
+                            <form action="ProductList" method="get" style="display: inline-block;">
+                                <input type="submit" class="btn-cancel" value="Hủy">
+                            </form>
+                        </div>
         </div>
-    </div>
 </body>
+
 </html>

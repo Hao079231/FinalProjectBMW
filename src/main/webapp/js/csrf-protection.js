@@ -58,207 +58,42 @@ function shouldSubmitDirectly(form) {
   */
 }
 
-// Function to handle form submission with AJAX and CSRF token
+// Hàm lấy CSRF token đã mã hóa từ hidden input hoặc component chung
+function getCsrfToken() {
+  // Ưu tiên lấy theo id (nếu dùng page-info.jsp)
+  let tokenInput = document.getElementById('csrfTokenHash');
+  if (tokenInput) return tokenInput.value;
+
+  // Nếu không có, thử lấy theo name trong form đầu tiên
+  tokenInput = document.querySelector('input[name="csrfTokenHash"]');
+  if (tokenInput) return tokenInput.value;
+
+  // Nếu không tìm thấy, cảnh báo
+  console.warn('CSRF token not found in DOM!');
+  return '';
+}
+
+// Function to handle form submission with CSRF token
 function addCsrfTokenToForm(form) {
-  // Try to get CSRF token from meta tag
-  let csrfToken = '';
-  const metaTag = document.querySelector('meta[name="csrf-token"]');
-
-  if (metaTag) {
-    csrfToken = metaTag.getAttribute('content');
-  } else {
-    console.warn('CSRF meta tag not found, trying to get from hidden inputs');
-    // Thử lấy từ hidden input nếu có
-    const tokenInput = document.querySelector('input[name="csrfToken"]');
-    if (tokenInput) {
-      csrfToken = tokenInput.value;
-    }
-  }
-
   form.addEventListener('submit', function (event) {
-    // Only process if not already submitting
-    if (form.dataset.processing === 'true') {
-      return;
-    }
-
     // Prevent default submission temporarily
     event.preventDefault();
-    form.dataset.processing = 'true';
 
-    try {
-      // Kiểm tra xem form có cần submit trực tiếp không
-      if (shouldSubmitDirectly(form)) {
-        // Thêm CSRF token vào form nếu chưa có
-        let tokenInput = form.querySelector('input[name="csrfToken"]');
-        if (!tokenInput && csrfToken) {
-          tokenInput = document.createElement('input');
-          tokenInput.type = 'hidden';
-          tokenInput.name = 'csrfToken';
-          tokenInput.value = csrfToken;
-          form.appendChild(tokenInput);
-        }
-
-        // Submit form trực tiếp không qua AJAX
-        console.log('Submitting form directly:', form.action);
-        form.dataset.processing = 'false';
-        setTimeout(function () {
-          form.submit();
-        }, 10);
-        return;
-      }
-
-      // AJAX submission cho các form thông thường - Phần này hiện tại không được sử dụng
-      const formData = new FormData(form);
-
-      // Thêm CSRF token vào formData
-      if (csrfToken && !formData.has('csrfToken')) {
-        formData.append('csrfToken', csrfToken);
-      }
-
-      // Tạo và cấu hình AJAX request
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', form.action, true);
-
-      // Thêm header CSRF để server có thể xác thực
-      if (csrfToken) {
-        xhr.setRequestHeader('X-CSRF-Token', csrfToken);
-      }
-
-      // Đánh dấu là AJAX request
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-      // Xử lý response
-      xhr.onload = function () {
-        form.dataset.processing = 'false';
-
-        if (xhr.status >= 200 && xhr.status < 300) {
-          // Success handling
-          const successToast = document.getElementById('success-toast');
-          if (successToast) {
-            successToast.style.display = 'block';
-            const successMessage = successToast.querySelector('span');
-            if (successMessage) {
-              successMessage.textContent = 'Thao tác thành công';
-            }
-          }
-
-          // Xử lý response HTML (redirect)
-          if (xhr.responseText.includes('<!DOCTYPE html>') ||
-            xhr.responseText.includes('<html>')) {
-            document.open();
-            document.write(xhr.responseText);
-            document.close();
-            return;
-          }
-
-          // Xử lý JSON response
-          try {
-            const response = JSON.parse(xhr.responseText);
-            if (response.redirect) {
-              window.location.href = response.redirect;
-              return;
-            }
-
-            if (response.message) {
-              if (successToast) {
-                const successMessage = successToast.querySelector('span');
-                if (successMessage) {
-                  successMessage.textContent = response.message;
-                }
-              }
-            }
-          } catch (e) {
-            // Không phải JSON hoặc không có redirect
-            console.log('Response is not JSON or has no redirect info');
-          }
-
-          // Mặc định: reload trang sau khi thành công
-          setTimeout(function () {
-            window.location.reload();
-          }, 1000);
-        } else {
-          // Error handling
-          console.error('Form submission failed:', xhr.status, xhr.statusText);
-          const errorToast = document.getElementById('error-toast');
-
-          if (errorToast) {
-            errorToast.style.display = 'block';
-            const errorMessage = errorToast.querySelector('span');
-            if (errorMessage) {
-              let errorText = 'Error ' + xhr.status + ': ' + (xhr.statusText || 'Form submission failed');
-
-              try {
-                // Kiểm tra xem response có phải JSON không
-                const response = JSON.parse(xhr.responseText);
-                if (response.error) {
-                  errorText = response.error;
-                }
-              } catch (e) {
-                // Không phải JSON, giữ nguyên message mặc định
-              }
-
-              errorMessage.textContent = errorText;
-            }
-          } else {
-            // Fallback error display
-            alert('Error ' + xhr.status + ': ' + (xhr.statusText || 'Form submission failed'));
-          }
-        }
-      };
-
-      // Xử lý lỗi mạng
-      xhr.onerror = function () {
-        form.dataset.processing = 'false';
-        console.error('Network error during form submission');
-
-        const errorToast = document.getElementById('error-toast');
-        if (errorToast) {
-          errorToast.style.display = 'block';
-          const errorMessage = errorToast.querySelector('span');
-          if (errorMessage) {
-            errorMessage.textContent = 'Lỗi kết nối mạng khi gửi form';
-          }
-        } else {
-          // Fallback error display
-          alert('Lỗi kết nối mạng khi gửi form');
-        }
-
-        // Sau lỗi mạng, thử submit trực tiếp
-        setTimeout(function () {
-          if (confirm('Thử lại bằng cách gửi form trực tiếp?')) {
-            // Thêm CSRF token nếu cần
-            let tokenInput = form.querySelector('input[name="csrfToken"]');
-            if (!tokenInput && csrfToken) {
-              tokenInput = document.createElement('input');
-              tokenInput.type = 'hidden';
-              tokenInput.name = 'csrfToken';
-              tokenInput.value = csrfToken;
-              form.appendChild(tokenInput);
-            }
-            form.submit();
-          }
-        }, 1000);
-      };
-
-      // Gửi form data
-      xhr.send(formData);
-    } catch (error) {
-      console.error('Error in form submission:', error);
-      form.dataset.processing = 'false';
-
-      // Fallback to normal form submission in case of errors
-      let tokenInput = form.querySelector('input[name="csrfToken"]');
-      if (!tokenInput && csrfToken) {
-        tokenInput = document.createElement('input');
-        tokenInput.type = 'hidden';
-        tokenInput.name = 'csrfToken';
-        tokenInput.value = csrfToken;
-        form.appendChild(tokenInput);
-      }
-
-      // Submit trực tiếp không cần xác nhận khi có lỗi
-      form.submit();
+    // Thêm CSRF token vào form nếu chưa có
+    let csrfToken = getCsrfToken();
+    let tokenInput = form.querySelector('input[name="csrfTokenHash"]');
+    if (!tokenInput && csrfToken) {
+      tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = 'csrfTokenHash';
+      tokenInput.value = csrfToken;
+      form.appendChild(tokenInput);
+    } else if (tokenInput) {
+      tokenInput.value = csrfToken;
     }
+
+    // Submit form
+    form.submit();
   });
 }
 
@@ -278,8 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Áp dụng xử lý CSRF cho mỗi form
   forms.forEach(function (form) {
-    // Chỉ áp dụng cho các form có method POST
-    if (form.method.toLowerCase() === 'post') {
+    // Chỉ áp dụng cho các form có method POST hoặc GET
+    if (form.method.toLowerCase() === 'post' || form.method.toLowerCase() === 'get') {
       // Kiểm tra xem form có data-no-csrf attribute không 
       if (!form.hasAttribute('data-no-csrf')) {
         addCsrfTokenToForm(form);

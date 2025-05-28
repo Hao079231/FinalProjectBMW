@@ -52,6 +52,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><c:out value="${product != null ? product.name : 'Product Detail'}" /></title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@1.9.6/dist/tailwind.min.css" rel="stylesheet">
+    <script src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
+        <jsp:include page="/components/page-info.jsp" />
 </head>
 <body class="bg-gray-100">
 

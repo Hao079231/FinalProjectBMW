@@ -7,10 +7,8 @@
       <head>
         <meta charset="UTF-8">
         <title>Xác nhận OTP</title>
-        <!-- CSRF Token để JavaScript có thể truy cập -->
-        <meta name="csrf-token" content="${sessionScope.csrfToken}">
-        <!-- Nhúng script bảo vệ CSRF -->
         <script src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
+            <jsp:include page="/components/page-info.jsp" />
         <style>
           .form-container {
             max-width: 500px;
