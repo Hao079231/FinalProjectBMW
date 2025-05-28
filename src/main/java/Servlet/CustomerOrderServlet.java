@@ -22,9 +22,6 @@ import Beans.Users;
 import Utils.DBOrder;
 import Utils.DBOrderDetail;
 
-/**
- * Servlet implementation class CustomerOrderServlet
- */
 @WebServlet("/CustomerOrder")
 public class CustomerOrderServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -39,8 +36,9 @@ public class CustomerOrderServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Users user = (Users) session.getAttribute("user"); // Lấy đối tượng người dùng từ session
         if (user == null) {
-            logger.warn("No user found in session");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in.");
+            logger.warn("No user found in session, redirecting to signinup.jsp");
+            // Chuyển hướng đến trang đăng nhập với thông báo trạng thái
+            response.sendRedirect("SignInUp?status=login_required");
             return;
         }
         int customerId = user.getUserId();  // Lấy userId từ đối tượng người dùng

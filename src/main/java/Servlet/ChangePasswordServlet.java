@@ -6,6 +6,7 @@ import Beans.Message;
 import Utils.DBUsers;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
+@WebServlet("/ChangePassword")
 public class ChangePasswordServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   private static final int OTP_EXPIRY_MINUTES = 10;

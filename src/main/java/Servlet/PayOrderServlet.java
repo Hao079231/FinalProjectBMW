@@ -54,7 +54,7 @@ public class PayOrderServlet extends HttpServlet {
         if (user == null) {
             logger.warn("No user found in session, redirecting to login");
             session.setAttribute("error", "Bạn cần đăng nhập để thực hiện thanh toán.");
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("signinup.jsp");
             return;
         }
         logger.debug("User ID: {}", user.getUserId());
