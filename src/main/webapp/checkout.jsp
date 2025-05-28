@@ -21,8 +21,8 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/tailwindcss@1.9.6/dist/tailwind.min.css">
     <!-- Nhúng script bảo vệ CSRF -->
-    <script
-        src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
+    <script src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
+        <jsp:include page="/components/page-info.jsp" />
 </head>
 
 <body class="bg-gray-100">

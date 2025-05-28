@@ -11,6 +11,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="${pageContext.request.contextPath}/js/csrf-protection.js"></script>
+      <jsp:include page="/components/page-info.jsp" />
 </head>
 <body class="font-roboto bg-gray-100">
   <!-- Header Section -->
@@ -60,7 +62,6 @@
             <input type="hidden" name="price" value="<%= product.getPrice() %>">
             <input type="hidden" name="productImage" value="<%= java.util.Base64.getEncoder().encodeToString(product.getImage()) %>">
             <input type="hidden" name="quantity" value="1" />
-            <input type="hidden" name="csrfToken" value="<%= session.getAttribute("csrfToken") %>"/>
             <button type="submit"
                     class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500
                            absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
